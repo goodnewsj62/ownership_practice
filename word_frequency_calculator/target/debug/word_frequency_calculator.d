@@ -1,1 +1,0 @@
-/Users/mac/Documents/work_folder/rs/practise_ownership/word_frequency_calculator/target/debug/word_frequency_calculator: /Users/mac/Documents/work_folder/rs/practise_ownership/word_frequency_calculator/src/main.rs
