@@ -92,10 +92,28 @@ fn display_todos(todos: &[Todo]) {
         1.  name ,  description,  status
         2. name,  description, status
 
+        to make the display format better just like i see in other linux display command like top
+        for each column we get the maximum length of character and when displaying if the character is < than
+        the max we will pad with space
     */
-    let header = ["id", "title", "description", "status"];
 
-    println!("{:?}", header);
+    let (title, desc, status) = ("title", "description", "status");
+
+    let id_col_size = todos.len().to_string().len();
+    let [col_1, col_2, col_3] = get_max_length(todos);
+    let [col_1, col_2, col_3] = [
+        col_1.max(title.len()),
+        col_2.max(desc.len()),
+        col_3.max(status.len()),
+    ];
+
+    println!(
+        "{} {} {} {}",
+        p_r("id".to_uppercase().as_ref(), id_col_size),
+        p_r(title.to_uppercase().as_ref(), col_1),
+        p_r(desc.to_uppercase().as_ref(), col_2),
+        p_r(status.to_uppercase().as_ref(), col_3)
+    );
 
     for (index, todo) in todos.iter().enumerate() {
         let description = if let Some(value) = &todo.description {
@@ -103,9 +121,43 @@ fn display_todos(todos: &[Todo]) {
         } else {
             ""
         };
+        let status = format!("{:?}", todo.status);
 
-        println!("{index}. {} {} {:?}", todo.title, description, todo.status)
+        println!(
+            "{} {} {} {}",
+            p_r(index.to_string().as_ref(), id_col_size),
+            p_r(todo.title.as_ref(), col_1),
+            p_r(description, col_2),
+            p_r(status.as_ref(), col_3)
+        );
     }
+}
+
+fn get_max_length(todos: &[Todo]) -> [usize; 3] {
+    let mut column_len: [usize; 3] = [0, 0, 8];
+
+    todos.iter().for_each(|f| {
+        let title_len = f.title.len();
+        let description_len = f.description.as_ref().map_or(0, |d| d.len());
+
+        column_len[0] = if title_len > column_len[0] {
+            title_len
+        } else {
+            column_len[0]
+        };
+
+        column_len[1] = if description_len > column_len[1] {
+            description_len
+        } else {
+            column_len[1]
+        };
+    });
+
+    column_len
+}
+
+fn p_r(value: &str, width: usize) -> String {
+    format!("{:width$}", value, width = width + 1)
 }
 
 fn add_todo(store: &mut Vec<Todo>, title: &str) {
